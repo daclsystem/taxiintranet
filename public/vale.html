@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/intranet/favicon.png" />
+    <title>Z Movilidad - Vale de Servicio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configurar Tailwind para modo oscuro
+        tailwind.config = {
+            darkMode: 'class'
+        }
+        
+        // Script para detectar tema del sistema y aplicarlo
+        (function() {
+            const theme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (theme === 'dark' || (!theme && systemPrefersDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <div id="app">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                <p class="text-gray-600 dark:text-gray-400">Cargando vale...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Obtener token de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('key');
+
+        if (!token) {
+            document.getElementById('app').innerHTML = `
+                <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                    <div class="text-center max-w-md mx-auto p-6">
+                        <div class="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Token no válido</h2>
+                        <p class="text-gray-600 dark:text-gray-400">No se proporcionó un token válido para el vale del servicio.</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Cargar datos del vale
+            cargarVale(token);
+        }
+
+        async function cargarVale(token) {
+            try {
+                const response = await fetch(`https://apiservices.zmovilidad.app/api/Generador/Vale?idservicios=${token}&condicion=0`);
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.result.estatus !== 200) {
+                    throw new Error(data.result.message || 'Error al obtener vale');
+                }
+
+                mostrarVale(data.result);
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarError(error.message);
+            }
+        }
+
+        function mostrarError(mensaje) {
+            document.getElementById('app').innerHTML = `
+                <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                    <div class="text-center max-w-md mx-auto p-6">
+                        <div class="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Error al cargar vale</h2>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">${mensaje}</p>
+                        <button onclick="location.reload()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
+                            Reintentar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function mostrarVale(valeData) {
+            const { ovservicio } = valeData;
+            const esPendiente = ovservicio.idestado === 7;
+            
+            document.getElementById('app').innerHTML = `
+                <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+                    <!-- Header -->
+                    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 no-print">
+                        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="flex items-center justify-between h-16">
+                                <div>
+                                    <h1 class="text-xl font-bold text-gray-900 dark:text-white">
+                                        Vale de Servicio #${ovservicio.idservicio}
+                                    </h1>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <button onclick="window.print()" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                                        </svg>
+                                        Imprimir
+                                    </button>
+                                    <!-- Toggle de tema -->
+                                    <button onclick="toggleTheme()" class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <!-- Contenido del Vale -->
+                    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:py-4">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 print:shadow-none print:border-gray-400">
+                            
+                            <!-- Header del Vale -->
+                            <div class="text-center py-8 border-b border-gray-200 dark:border-gray-600">
+                                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                                    ${ovservicio.solicitante}, gracias por preferirnos
+                                </h1>
+                                <div class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                                    #${ovservicio.idservicio}
+                                </div>
+                                <div class="text-4xl font-bold text-orange-600 mb-6">
+                                    S/ ${ovservicio.costototal.toFixed(2)}
+                                </div>
+                                
+                                <div class="flex justify-center space-x-8 text-sm">
+                                    <div class="flex items-center text-gray-700 dark:text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 6v6m-4-6h8"></path>
+                                        </svg>
+                                        <span class="font-semibold">Fecha</span>
+                                        <span class="ml-2">${ovservicio.fecha}</span>
+                                    </div>
+                                    <div class="flex items-center text-gray-700 dark:text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span class="font-semibold">Hora</span>
+                                        <span class="ml-2">${ovservicio.hora}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Información del Servicio -->
+                            <div class="p-8">
+                                <div class="grid md:grid-cols-2 gap-8">
+                                    
+                                    <!-- Información Básica -->
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Cliente</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.nombrecomercial}</span>
+                                        </div>
+                                        
+                                        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Traslado</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold text-right">
+                                                ${ovservicio.personal.replace(/&#x0D;\n/g, '').trim()}
+                                            </span>
+                                        </div>
+
+                                        ${ovservicio.tipo.toLowerCase() === 'corporativo' ? `
+                                        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Área</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.area && ovservicio.area !== '0' ? ovservicio.area : '-'}</span>
+                                        </div>
+                                        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Centro costos</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.centrocostos && ovservicio.centrocostos !== '0' ? ovservicio.centrocostos : '-'}</span>
+                                        </div>
+                                        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Motivo</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold text-right">${ovservicio.motivosolicitud || '-'}</span>
+                                        </div>
+                                        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Detalle motivo</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold text-right">${ovservicio.motivodetalle || '-'}</span>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+
+                                    <!-- Ubicaciones -->
+                                    <div class="space-y-4">
+                                        <div class="py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300 block mb-2">Origen</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.direccionorigen}</span>
+                                        </div>
+
+                                        ${ovservicio.ruta ? `
+                                        <div class="py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300 block mb-2">Ruta adicional</span>
+                                            <div class="text-gray-900 dark:text-white font-semibold whitespace-pre-line">
+                                                ${ovservicio.ruta.replace(/&#x0D;\n/g, '').trim()}
+                                            </div>
+                                        </div>
+                                        ` : ''}
+
+                                        <div class="py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300 block mb-2">Destino</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.direcciondestino}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                ${!esPendiente ? `
+                                <!-- Información del Móvil -->
+                                <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+                                    <div class="grid md:grid-cols-2 gap-8">
+                                        <div class="space-y-4">
+                                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Móvil</span>
+                                                <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.movil}</span>
+                                            </div>
+                                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Inicio servicio</span>
+                                                <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.fechorproceso}</span>
+                                            </div>
+                                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Fin del servicio</span>
+                                                <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.fechorfinalizado}</span>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-4">
+                                            <div class="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-600">
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Conductor</span>
+                                                <div class="flex items-center space-x-3">
+                                                    <img src="${ovservicio.foto}" alt="Conductor" class="w-12 h-12 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600">
+                                                    <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.nombres}</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Placa</span>
+                                                <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.nplaca}</span>
+                                            </div>
+                                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Vehículo</span>
+                                                <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.datmovil}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                ` : ''}
+
+                                <!-- Costos -->
+                                <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Pago</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold">${ovservicio.tipo}</span>
+                                        </div>
+                                        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Costo</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold">S/ ${ovservicio.subtotal.toFixed(2)}</span>
+                                        </div>
+                                        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Peaje</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold">S/ ${ovservicio.peaje.toFixed(2)}</span>
+                                        </div>
+                                        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Parqueo</span>
+                                            <span class="text-gray-900 dark:text-white font-semibold">S/ ${ovservicio.parqueo.toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer con iconos de acción -->
+                            <div class="bg-gray-50 dark:bg-gray-700 px-8 py-6 rounded-b-xl no-print">
+                                <div class="flex justify-center space-x-8">
+                                    <button onclick="window.open('https://api.whatsapp.com/send?phone=51932116459&text=necesito%20ayuda', '_blank')" class="flex flex-col items-center p-4 text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                                        <div class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mb-2">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm">Ayuda</span>
+                                    </button>
+                                    <button onclick="window.open('https://zmovilidad.com', '_blank')" class="flex flex-col items-center p-4 text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                                        <div class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mb-2">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm">Web</span>
+                                    </button>
+                                    <button onclick="window.open('mailto:reservas@zmovilidad.com', '_self')" class="flex flex-col items-center p-4 text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                                        <div class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mb-2">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm">Email</span>
+                                    </button>
+                                    <button onclick="window.open('tel:+15144400', '_self')" class="flex flex-col items-center p-4 text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                                        <div class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mb-2">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm">Llamada</span>
+                                    </button>
+                                    <button onclick="window.print()" class="flex flex-col items-center p-4 text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                                        <div class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mb-2">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm">Imprimir</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Actualizar icono del tema
+            updateThemeIcon();
+        }
+
+        // Función para toggle del tema
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            updateThemeIcon();
+        }
+
+        // Función para actualizar el icono del tema
+        function updateThemeIcon() {
+            const themeIcon = document.getElementById('theme-icon');
+            if (!themeIcon) return;
+            
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            if (isDark) {
+                // Icono de sol para modo oscuro
+                themeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                `;
+            } else {
+                // Icono de luna para modo claro
+                themeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

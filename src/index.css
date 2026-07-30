@@ -1,0 +1,269 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --zm-bg: #fafafa;
+  --zm-surface: #ffffff;
+  --zm-border: #e4e4e7;
+  --zm-text: #18181b;
+  --zm-muted: #71717a;
+  --zm-primary: #d97706;
+  --zm-primary-soft: rgba(217, 119, 6, 0.12);
+  --zm-input: #ffffff;
+  --zm-input-border: #e4e4e7;
+  --zm-shadow: 0 10px 30px -18px rgba(24, 24, 27, 0.28);
+}
+
+.dark {
+  --zm-bg: #09090b;
+  --zm-surface: #18181b;
+  --zm-border: #27272a;
+  --zm-text: #fafafa;
+  --zm-muted: #a1a1aa;
+  --zm-primary: #f59e0b;
+  --zm-primary-soft: rgba(245, 158, 11, 0.16);
+  --zm-input: #18181b;
+  --zm-input-border: #3f3f46;
+  --zm-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.65);
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    background: var(--zm-bg);
+    color: var(--zm-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Sora', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .bg-surface {
+    background-color: var(--zm-bg);
+  }
+
+  .zm-card {
+    @apply rounded-2xl border transition-all duration-200;
+    background: var(--zm-surface);
+    border-color: var(--zm-border);
+    box-shadow: var(--zm-shadow);
+  }
+
+  .zm-card:hover {
+    @apply -translate-y-0.5;
+    border-color: color-mix(in srgb, var(--zm-primary) 35%, var(--zm-border));
+  }
+
+  .zm-card-static {
+    @apply rounded-2xl border;
+    background: var(--zm-surface);
+    border-color: var(--zm-border);
+    box-shadow: var(--zm-shadow);
+  }
+
+  .zm-section-title {
+    @apply text-lg font-semibold tracking-tight;
+    color: var(--zm-text);
+  }
+
+  .zm-muted {
+    color: var(--zm-muted);
+  }
+
+  .zm-icon-tile {
+    @apply inline-flex items-center justify-center w-12 h-12 rounded-xl text-white shadow-sm;
+  }
+
+  .zm-header {
+    @apply sticky top-0 z-30 border-b backdrop-blur-xl;
+    background: color-mix(in srgb, var(--zm-surface) 88%, transparent);
+    border-color: var(--zm-border);
+  }
+
+  .zm-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200;
+    background: linear-gradient(135deg, #f59e0b, #ea580c);
+  }
+
+  .zm-btn-primary:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+  }
+
+  .app-shell {
+    min-height: 100vh;
+  }
+
+  /* Controles de formulario unificados (light + dark) */
+  .zm-input {
+    @apply w-full rounded-xl px-3.5 py-2.5 text-[15px] transition-all duration-200;
+    @apply focus:outline-none focus:ring-4 focus:ring-amber-500/15 focus:border-amber-500;
+    background: var(--zm-input);
+    color: var(--zm-text);
+    border: 1px solid var(--zm-input-border);
+  }
+
+  .zm-input::placeholder {
+    color: var(--zm-muted);
+    opacity: 0.75;
+  }
+
+  .zm-input:hover {
+    border-color: color-mix(in srgb, var(--zm-primary) 25%, var(--zm-input-border));
+  }
+
+  /* Autofill del navegador (evita fondo blanco/azul sobre tema oscuro) */
+  .zm-input:-webkit-autofill,
+  .zm-input:-webkit-autofill:hover,
+  .zm-input:-webkit-autofill:focus,
+  .zm-input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--zm-text) !important;
+    caret-color: var(--zm-text);
+    border: 1px solid var(--zm-input-border) !important;
+    /* inset box-shadow pinta encima del fondo nativo del autofill */
+    -webkit-box-shadow: 0 0 0 1000px var(--zm-input) inset !important;
+    box-shadow: 0 0 0 1000px var(--zm-input) inset !important;
+    transition: background-color 99999s ease-out 0s;
+  }
+
+  .zm-input-error {
+    @apply border-red-400 focus:ring-red-500/15 focus:border-red-400;
+  }
+
+  .zm-input-error:-webkit-autofill,
+  .zm-input-error:-webkit-autofill:hover,
+  .zm-input-error:-webkit-autofill:focus {
+    border-color: rgb(248 113 113) !important;
+  }
+
+  .zm-label {
+    @apply block text-sm font-medium mb-1.5;
+    color: var(--zm-text);
+    opacity: 0.85;
+  }
+
+  .zm-field-hint {
+    @apply mt-1.5 text-xs;
+    color: var(--zm-muted);
+  }
+
+  .zm-field-error {
+    @apply mt-1.5 text-sm text-red-600 dark:text-red-400;
+  }
+
+  .login-btn-primary {
+    @apply w-full h-12 inline-flex items-center justify-center rounded-xl
+      text-[15px] font-semibold text-white
+      bg-zinc-900 hover:bg-zinc-800
+      dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-zinc-950
+      shadow-sm transition-all duration-200
+      focus:outline-none focus:ring-4 focus:ring-amber-500/20
+      disabled:opacity-55 disabled:cursor-not-allowed;
+  }
+
+  .login-btn-ghost {
+    @apply w-full h-11 inline-flex items-center justify-center rounded-xl
+      text-sm font-medium
+      border transition-colors duration-200
+      disabled:opacity-50;
+    color: var(--zm-text);
+    border-color: var(--zm-border);
+    background: transparent;
+  }
+
+  .login-btn-ghost:hover {
+    background: color-mix(in srgb, var(--zm-surface) 70%, var(--zm-bg));
+  }
+
+  .zm-dashboard-glow {
+    background:
+      radial-gradient(900px 420px at 12% -10%, color-mix(in srgb, var(--zm-primary) 22%, transparent), transparent 60%),
+      radial-gradient(700px 360px at 90% 0%, color-mix(in srgb, var(--zm-primary) 10%, transparent), transparent 55%),
+      var(--zm-bg);
+  }
+
+  .zm-table {
+    @apply w-full text-[12px] leading-tight;
+  }
+
+  .zm-table thead th {
+    @apply px-2 py-1 text-left text-[10px] font-semibold uppercase tracking-wider
+      text-zinc-500 dark:text-zinc-400 whitespace-nowrap
+      bg-zinc-50/95 dark:bg-zinc-900/95 border-b border-zinc-200 dark:border-zinc-800;
+  }
+
+  .zm-table tbody td {
+    @apply px-2 py-1 text-zinc-800 dark:text-zinc-200
+      border-b border-zinc-100 dark:border-zinc-800/80 align-middle;
+  }
+
+  .zm-table tbody tr {
+    @apply transition-colors;
+  }
+
+  .zm-table tbody tr:hover {
+    @apply bg-amber-500/[0.04];
+  }
+
+  .zm-table tbody td .rounded-full {
+    @apply px-2 py-0 text-[11px] leading-5;
+  }
+}
+
+@keyframes zm-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: zm-fade-up 0.45s ease-out both;
+}
+
+.animate-fade-in-delay-1 {
+  animation: zm-fade-up 0.5s ease-out 0.08s both;
+}
+
+.animate-fade-in-delay-2 {
+  animation: zm-fade-up 0.5s ease-out 0.16s both;
+}
+
+/* Scrollbar sutil */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--zm-primary) 55%, transparent) transparent;
+}
+
+@media print {
+  body {
+    background: white !important;
+  }
+
+  .zm-vale {
+    box-shadow: none !important;
+    border-color: #d4d4d8 !important;
+  }
+
+  .zm-vale,
+  .zm-vale * {
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
