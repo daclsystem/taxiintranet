@@ -4,7 +4,7 @@ import { fetchWithAuth } from '../utils/apiInterceptor';
 import { GEO_PLACE_API_BASE, GEO_ROUTE_API_BASE } from '../config/apiEndpoints';
 import { throwConnectionError } from '../utils/connectionErrors';
 
-const API_BASE_URL = 'https://apiservices.zmovilidad.app/api/AppIntranetCliente';
+const API_BASE_URL = 'https://apitaxi.indevsoft.com/api/AppIntranetCliente';
 
 /**
  * Servicio para obtener configuración de solicitud
@@ -150,7 +150,7 @@ export const detectarZona = async (latitude: number, longitude: number) => {
 
   try {
     const response = await fetchWithAuth(
-      `https://apiservices.zmovilidad.app/api/AppIntranetcliente/Zona?latitude=${latitude}&longitude=${longitude}`,
+      `https://apitaxi.indevsoft.com/api/AppIntranetcliente/Zona?latitude=${latitude}&longitude=${longitude}`,
       {
         method: 'GET',
         headers: {
@@ -254,7 +254,7 @@ export const calcularTarifa = async (tarifaData: {
   }
 
   try {
-    const response = await fetchWithAuth('https://apiservices.zmovilidad.app/api/AppIntranetCliente/Tarifario', {
+    const response = await fetchWithAuth('https://apitaxi.indevsoft.com/api/AppIntranetCliente/Tarifario', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.key}`,

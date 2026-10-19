@@ -2,7 +2,7 @@ import { TrackingResponse, RutaResponse } from '../types/tracking';
 import { GEO_ROUTE_API_BASE } from '../config/apiEndpoints';
 import { throwConnectionError } from '../utils/connectionErrors';
 
-const API_BASE_URL = 'https://apiservices.zmovilidad.app/api/Operaciones';
+const API_BASE_URL = 'https://apitaxi.indevsoft.com/api/Operaciones';
 
 /**
  * Servicio para obtener datos de tracking

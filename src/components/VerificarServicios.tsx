@@ -353,7 +353,7 @@ export const VerificarServicios: React.FC<VerificarServiciosProps> = ({ onVolver
     }
     
     try {
-      const response = await fetchWithAuth('https://apiservices.zmovilidad.app/api/AppIntranetCliente/Validaservicio', {
+      const response = await fetchWithAuth('https://apitaxi.indevsoft.com/api/AppIntranetCliente/Validaservicio', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -403,7 +403,7 @@ export const VerificarServicios: React.FC<VerificarServiciosProps> = ({ onVolver
     }
     
     try {
-      const response = await fetchWithAuth('https://apiservices.zmovilidad.app/api/AppIntranetCliente/Validaservicio', {
+      const response = await fetchWithAuth('https://apitaxi.indevsoft.com/api/AppIntranetCliente/Validaservicio', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

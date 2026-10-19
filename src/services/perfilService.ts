@@ -3,7 +3,7 @@ import { obtenerSesion } from './authService';
 import { fetchWithAuth } from '../utils/apiInterceptor';
 import { throwConnectionError } from '../utils/connectionErrors';
 
-const API_BASE_URL = 'https://apiservices.zmovilidad.app/api/AppIntranetCliente';
+const API_BASE_URL = 'https://apitaxi.indevsoft.com/api/AppIntranetCliente';
 
 /**
  * Servicio para obtener datos del perfil del usuario

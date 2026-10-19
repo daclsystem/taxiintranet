@@ -4,7 +4,7 @@ import { fetchWithAuth } from '../utils/apiInterceptor';
 import { utils, writeFile } from 'xlsx';
 import { throwConnectionError } from '../utils/connectionErrors';
 
-const API_BASE_URL = 'https://apiservices.zmovilidad.app/api/AppIntranetCliente';
+const API_BASE_URL = 'https://apitaxi.indevsoft.com/api/AppIntranetCliente';
 
 /**
  * Servicio para crear o actualizar personal

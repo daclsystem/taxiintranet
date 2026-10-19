@@ -1,7 +1,7 @@
 import { ValeResponse } from '../types/vale';
 import { throwConnectionError } from '../utils/connectionErrors';
 
-const API_BASE_URL = 'https://apiservices.zmovilidad.app/api/Generador';
+const API_BASE_URL = 'https://apitaxi.indevsoft.com/api/Generador';
 
 /**
  * Servicio para obtener datos del vale

@@ -3,7 +3,7 @@ import { fetchWithAuth } from '../utils/apiInterceptor';
 import { throwConnectionError } from '../utils/connectionErrors';
 import { APP_VERSION } from '../utils/appVersion';
 
-const API_BASE_URL = 'https://apiservices.zmovilidad.app/api/AppIntranetCliente';
+const API_BASE_URL = 'https://apitaxi.indevsoft.com/api/AppIntranetCliente';
 
 /**
  * Servicio para login por email
